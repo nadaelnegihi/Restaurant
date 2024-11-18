@@ -1,4 +1,5 @@
 const reservationModel = require('../models/reservationModel');
+const tableModel = require('../models/tableModel');
 //const { Roles } = require('../middlewares/authMiddleware');
 
 // create  --user 
@@ -6,6 +7,14 @@ const createReservation = async (req,res)=>{
     try {
         const { table_number, reservation_time } = req.body;
         const customer_id = req.user.id; 
+         
+        const table = await tableModel.findOne({ table_number });
+        if (!table) {
+            return res.status(404).json({ error: 'Table not found' });
+        }
+        if (!table.isAvailable) {
+            return res.status(400).json({ error: 'Table is already reserved' });
+        }
 
         const newReservation = new reservationModel({
             customer_id,
@@ -30,7 +39,7 @@ const editReservation = async (req,res)=>{
     try {
         const { reservationId } = req.params;
         const { table_number, reservation_time } = req.body;
-        const customer_id = req.user.id;
+      //  const customer_id = req.user.id;
 
         // Find the reservation by ID
        const reservation = await reservationModel.findById(reservationId);
@@ -38,9 +47,15 @@ const editReservation = async (req,res)=>{
         return res.status(404).json({ error: 'Reservation not found' });
        }
 
-       reservation.table_number = table_number || reservation.table_number;
-       reservation.reservation_time = reservation_time || reservation.reservation_time;
-       const updatedReservation = await reservation.save();
+    //    if (reservation.customer_id.toString() !== customer_id) {
+    //     return res.status(403).json({ error: 'You are not authorized to cancel this reservation' });
+    //   }
+
+      if (table_number) reservation.table_number = table_number;
+      if (reservation_time) reservation.reservation_time = reservation_time;
+
+       
+      const updatedReservation = await reservation.save();
    
        res.status(200).json({
          message: 'Reservation updated successfully',
@@ -62,6 +77,13 @@ const cancelReservation = async(req,res)=>{
         if (!reservation) {
          return res.status(404).json({ error: 'Reservation not found' });
         }
+        
+        // Mark the table as available
+        const table = await tableModel.findOne({ table_number: reservation.table_number });
+        if (table) {
+            table.isAvailable = true;
+            await table.save();
+        } 
 
         reservation.status = 'canceled';
         const canceledReservation = await reservation.save();

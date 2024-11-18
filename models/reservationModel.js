@@ -22,9 +22,6 @@ const reservationSchema = new Schema(
       default: 'active',
     },
   },
-//   {
-//     timestamps: true, // Automatically manages createdAt and updatedAt fields
-//   }
 );
 
 const reservationModel = mongoose.model('Reservation', reservationSchema);

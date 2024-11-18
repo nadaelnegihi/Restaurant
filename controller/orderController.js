@@ -66,7 +66,7 @@ const editOrder = async (req,res)=>{
     try {
         const { orderId } = req.params;
         const { items } = req.body; // New items array to update the order
-        const customer_id = req.user.id; 
+      //  const customer_id = req.user.id; 
         // check that the order exists 
         const order = await orderModel.findById(orderId);
         if (!order) {
@@ -139,4 +139,5 @@ module.exports = {
     placeOrder,
     editOrder,   
     cancelOrder,
-};
+}; 
+
