@@ -3,7 +3,7 @@ const router = require("express").Router()
 const {signUp,login} = require('../controller/authController');
 //const { auth } = require("../middleware/authMiddleware");
 
-const userModel = require('../models/userModel');
+//const userModel = require('../models/userModel');
 
 
 
