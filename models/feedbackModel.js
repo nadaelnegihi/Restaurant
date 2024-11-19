@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const feedbackSchema = new mongoose.Schema({
-    customerId: {
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Refers to the User collection
         required: true,

@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const reservationSchema = new Schema(
   {
-    customer_id: {
+    user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User', // Refers to the Users table
       required: true,
