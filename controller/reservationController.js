@@ -5,7 +5,7 @@ const tableModel = require('../models/tableModel');
 // create  --user 
 const createReservation = async (req,res)=>{
     try {
-        const { table_number, reservation_time } = req.body;
+        const { table_number, time } = req.body;
         const customer_id = req.user.id; 
          
         const table = await tableModel.findOne({ table_number });
@@ -19,10 +19,12 @@ const createReservation = async (req,res)=>{
         const newReservation = new reservationModel({
             customer_id,
             table_number,
-            reservation_time,
+            time,
           });
 
           const savedReservation = await newReservation.save();
+          table.isAvailable = false;
+          await table.save();
           res.status(201).json({
             message: 'Reservation created successfully',
             reservation: savedReservation,
@@ -38,7 +40,7 @@ const createReservation = async (req,res)=>{
 const editReservation = async (req,res)=>{
     try {
         const { reservationId } = req.params;
-        const { table_number, reservation_time } = req.body;
+        const { table_number, time } = req.body;
       //  const customer_id = req.user.id;
 
         // Find the reservation by ID
@@ -52,7 +54,7 @@ const editReservation = async (req,res)=>{
     //   }
 
       if (table_number) reservation.table_number = table_number;
-      if (reservation_time) reservation.reservation_time = reservation_time;
+      if (time) reservation.time = time;
 
        
       const updatedReservation = await reservation.save();
@@ -104,7 +106,6 @@ const manageReservation = async (req, res) =>{
         const { reservationId } = req.params;
         const { status } = req.body; 
 
-        // Find the reservation by ID
        const reservation = await reservationModel.findById(reservationId);
        if (!reservation) {
         return res.status(404).json({ error: 'Reservation not found' });

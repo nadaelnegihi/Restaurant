@@ -1,21 +1,21 @@
 const mongoose = require('mongoose');
 
 const feedbackSchema = new mongoose.Schema({
-    customerId: {
+    customer_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Refers to the User collection
         required: true,
     },
-    reservationId: {
+    reservation_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'reservation', // Refers to the Reservation collection
+        ref: 'reservations', // Refers to the Reservation collection
         required: true,
     },
     rating: {
         type: Number,
         required: true,
-        min: 1, // Minimum rating is 1
-        max: 5, // Maximum rating is 5
+        min: 1, 
+        max: 5, 
     },
     details: {
         type: String,
@@ -28,6 +28,6 @@ const feedbackSchema = new mongoose.Schema({
     },
 });
 
-const feedbackModel = mongoose.model('Feedback', feedbackSchema);
+const feedbackModel = mongoose.model('feedbacks', feedbackSchema);
 
 module.exports = feedbackModel;

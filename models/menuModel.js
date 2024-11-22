@@ -20,11 +20,11 @@ const MenuItemSchema = new mongoose.Schema(
     price: {
       type: Number, 
       required: true,
-      min: 0, // Ensure price is non-negative
+      min: 0, 
     },
   },
 );
 
-const menuItemModel = mongoose.model('menuItem', MenuItemSchema);
+const menuItemModel = mongoose.model('menuitems', MenuItemSchema);
 
 module.exports = menuItemModel;

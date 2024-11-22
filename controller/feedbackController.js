@@ -3,12 +3,12 @@ const feedbackModel = require('../models/feedbackModel');
 // Submit Feedback (User Only)
 const submitFeedback = async (req, res) => {
     try {
-        const { reservationId, details, rating } = req.body;
-        const customerId = req.user.id;
+        const { reservation_id, details, rating } = req.body;
+        const customer_id = req.user.id;
 
         const newFeedback = new feedbackModel({
-            customerId,
-            reservationId,
+            customer_id,
+            reservation_id,
             rating,
             details,
         });
@@ -27,7 +27,7 @@ const submitFeedback = async (req, res) => {
 // View Feedback (Admin Only)
 const viewFeedback = async (req, res) => {
     try {
-        const feedbacks = await feedbackModel.find().populate('customerId', 'name email');
+        const feedbacks = await feedbackModel.find()
 
         res.status(200).json({
             message: 'Feedback retrieved successfully',

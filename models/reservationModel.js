@@ -5,12 +5,13 @@ const reservationSchema = new Schema(
   {
     customer_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Refers to the Users table
+      ref: 'users', 
       required: true,
     },
     table_number: {
       type: Number,
       required: true,
+      unique: true,
     },
     time: {
       type: Date,
@@ -18,12 +19,12 @@ const reservationSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'canceled', 'completed'], // Possible reservation statuses
+      enum: ['active', 'canceled', 'completed'], 
       default: 'active',
     },
   },
 );
 
-const reservationModel = mongoose.model('Reservation', reservationSchema);
+const reservationModel = mongoose.model('reservations', reservationSchema);
 
 module.exports = reservationModel;

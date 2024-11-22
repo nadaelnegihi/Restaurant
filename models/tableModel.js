@@ -6,19 +6,15 @@ const tableSchema = new mongoose.Schema({
         required: true,
         unique: true, // Ensures no two tables have the same table number
     },
-    capacity: {
-        type: Number,
-        required: true, // Capacity of the table (how many people it can seat)
-    },
     isAvailable: {
         type: Boolean,
         default: true, // Indicates whether the table is available or not
     },
 
-});
+},{ collection: 'table' });
 
 
 
-const tableModel = mongoose.model('Table', tableSchema);
+const tableModel = mongoose.model('table', tableSchema);
 
 module.exports = tableModel;
