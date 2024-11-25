@@ -1,14 +1,18 @@
 const mongoose = require('mongoose');
 
 const feedbackSchema = new mongoose.Schema({
+
     customer_id: {
+
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Refers to the User collection
         required: true,
     },
+
     reservation_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'reservations', // Refers to the Reservation collection
+
         required: true,
     },
     rating: {
@@ -16,6 +20,7 @@ const feedbackSchema = new mongoose.Schema({
         required: true,
         min: 1, 
         max: 5, 
+
     },
     details: {
         type: String,
@@ -29,5 +34,6 @@ const feedbackSchema = new mongoose.Schema({
 });
 
 const feedbackModel = mongoose.model('feedbacks', feedbackSchema);
+
 
 module.exports = feedbackModel;

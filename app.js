@@ -6,12 +6,17 @@ const orderRouter = require("./routes/order.router");
 const reservationRouter = require("./routes/reservation.router");
 const feedbackRouter = require("./routes/feedback.router");  
 const menuRouter = require("./routes/menu.router"); 
-const bodyParser = require('body-parser');
+
+
+
 dotenv.config();
 const app = express();
 app.use(express.json());
 const port = process.env.PORT;
-app.use(bodyParser.json());
+
+
+
+
 
 app.use("/api/v1",authrouter);
 app.use("/api/v1/orders", orderRouter);
