@@ -4,17 +4,16 @@ const orderSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'users', 
-    required: true,
   },
   reservation_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'reservation', // Optional: Links to Reservation if part of a reservation
+    ref: 'reservations', 
     default: null,
   },
   items: [
     {
-      menuItem: { type: mongoose.Schema.Types.ObjectId, ref: 'menuItem', required: true }, // Menu Item
-      quantity: { type: Number, required: true }, // Quantity of the item
+      item_id: { type: mongoose.Schema.Types.ObjectId, ref: 'menuitems', required: true },
+      quantity: { type: Number, required: true }, 
     },
   ],
   total_price: {
@@ -23,8 +22,8 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'in-progress', 'completed', 'cancelled'],
-    default: 'pending',
+    enum: ['in-progress', 'completed', 'canceled'],
+    default: 'in-progress',
   },
   created_at: {
     type: Date,
@@ -32,6 +31,6 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-const orderModel = mongoose.model('Order', orderSchema);
+const orderModel = mongoose.model('orders', orderSchema);
 
 module.exports=orderModel;

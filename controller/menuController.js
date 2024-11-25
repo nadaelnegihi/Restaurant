@@ -26,9 +26,11 @@ const addMenuItem = async (req, res) => {
 // Delete Menu Item (Admin Only)
 const deleteMenuItem = async (req, res) => {
     try {
-        const { menuItemId } = req.params;
 
-        const menuItem = await menuItemModel.findByIdAndDelete(menuItemId);
+        const { itemId } = req.params;
+
+        const menuItem = await menuItemModel.findByIdAndDelete(itemId);
+
 
         if (!menuItem) {
             return res.status(404).json({ error: 'Menu item not found' });
@@ -46,18 +48,23 @@ const deleteMenuItem = async (req, res) => {
 // Edit Menu Item (Admin Only)
 const editMenuItem = async (req, res) => {
     try {
-        const { menuItemId } = req.params;
-        const { name, category, description, price } = req.body;
 
-        const updatedMenuItem = await menuItemModel.findByIdAndUpdate(
-            menuItemId,
-            { name, category, description, price },
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedMenuItem) {
+        const { itemId } = req.params;  
+        const { name, category, description, price } = req.body; 
+        
+        const menuItem = await menuItemModel.findById(itemId);
+        
+        if (!menuItem) {
             return res.status(404).json({ error: 'Menu item not found' });
         }
+
+        if (name) menuItem.name = name;
+        if (category) menuItem.category = category;
+        if (description) menuItem.description = description;
+        if (price) menuItem.price = price;
+
+        const updatedMenuItem = await menuItem.save();
+
 
         res.status(200).json({
             message: 'Menu item updated successfully',

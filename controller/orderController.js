@@ -3,7 +3,6 @@ const menuItemModel = require("../models/menuModel")
 const reservationModel = require("../models/reservationModel");
 
 //place order 
-
 const placeOrder = async (req, res)=> {
     try {
       const {reservation_id, items } = req.body;
@@ -13,13 +12,6 @@ const placeOrder = async (req, res)=> {
       if (!reservation) {
       return res.status(404).json({ error: "Reservation not found" });
      }
-
-    //  // Ensure the reservation belongs to the logged-in user
-    //  if (reservation.customer_id.toString() !== customer_id) {
-    //     return res.status(403).json({ error: "You are not authorized to place an order for this reservation" });
-    // }
-
-    
     //ensures that all the database queries complete before moving to the next step
     const itemDetails = await Promise.all( // P is uppercase
 
@@ -46,7 +38,7 @@ const placeOrder = async (req, res)=> {
         reservation_id, 
         items: itemDetails,
         total_price,
-        status: 'placed', 
+        status: 'in-progress', 
       });
 
       const savedOrder = await newOrder.save();
@@ -65,18 +57,11 @@ const placeOrder = async (req, res)=> {
 const editOrder = async (req,res)=>{
     try {
         const { orderId } = req.params;
-        const { items } = req.body; // New items array to update the order
-      //  const customer_id = req.user.id; 
-        // check that the order exists 
+        const { items } = req.body; 
         const order = await orderModel.findById(orderId);
         if (!order) {
           return res.status(404).json({ error: "Order not found" });
         }
-    //     // Ensure the order belongs to the logged-in user (if applicable)
-    //     if (order.customer_id.toString() !== customer_id) {
-    //     return res.status(403).json({ error: "You are not authorized to edit this order" });
-    //    }
-    
        const itemDetails = await Promise.all(
            items.map(async (item)=>{
             const menuItem = await menuItemModel.findById(item.item_id);
@@ -112,26 +97,27 @@ const editOrder = async (req,res)=>{
 
 //cancel order 
 // for this case we are not removing the cancelled orders in the db 
-const cancelOrder= async (req,res)=>{
+const cancelOrder = async (req, res) => {
+  try {
+      const { orderId } = req.params;
 
-    try{
-        const {orderId} = req.params;
-
-        const order = await orderModel.findById(orderId);
-        if (!order)
-            return res.status(404).json({error:"order not found"});
-
-    order.status='canceled';
-    res.status(200).json({
-        message:'order canceled',
-        order, 
-    });
+      const order = await orderModel.findById(orderId);
+      if (!order) {
+          return res.status(404).json({ error: "Order not found" });
       }
-    catch(error){
-        res.status(400).json({ error: error.message });
-    }
-    
-}
+
+      order.status = 'canceled';
+
+      const updatedOrder = await order.save();
+
+      res.status(200).json({
+          message: 'Order canceled',
+          order: updatedOrder,
+      });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
 
 
 
