@@ -68,7 +68,7 @@ const editReservation = async (req,res)=>{
     }
 };
 
-// cancel --user 
+// cancel --both
 
 const cancelReservation = async(req,res)=>{
     try{
