@@ -108,6 +108,7 @@ const manageReservation = async (req, res) =>{
 
        const reservation = await reservationModel.findById(reservationId);
        
+       
        if (!reservation) {
         return res.status(404).json({ error: 'Reservation not found' });
        }
@@ -135,11 +136,12 @@ const getAllReservations = async (req, res) => {
     }
 };
 
-
 module.exports = {
     createReservation,
     editReservation,
     cancelReservation,
     manageReservation,
+    getAllReservations,
+};
     getAllReservations,
 };
