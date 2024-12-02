@@ -2,7 +2,7 @@ const orderModel = require("../models/orderModel")
 const menuItemModel = require("../models/menuModel")
 const reservationModel = require("../models/reservationModel");
 
-//place order 
+//place order (user)
 const placeOrder = async (req, res)=> {
     try {
       const {reservation_id, items } = req.body;
@@ -53,7 +53,7 @@ const placeOrder = async (req, res)=> {
 
 
 
-//edit order
+//edit order (user)
 const editOrder = async (req,res)=>{
     try {
         const { orderId } = req.params;
@@ -95,7 +95,7 @@ const editOrder = async (req,res)=>{
     }
 };
 
-//cancel order 
+//cancel order (user)
 // for this case we are not removing the cancelled orders in the db 
 const cancelOrder = async (req, res) => {
   try {

@@ -122,23 +122,25 @@ const manageReservation = async (req, res) =>{
         res.status(400).json({ error: error.message });
     }
 }
-const getAllReservations = async (req, res) => {
-    try {
-        const reservations = await reservationModel.find(); // Filter reservations by the user
 
-        res.status(200).json({
-            message: 'Reservations retrieved successfully',
-            reservations,
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+// // get all --by both 
+// const getAllReservations = async (req, res) => {
+//     try {
+//         const reservations = await reservationModel.find(); // Filter reservations by the user
+
+//         res.status(200).json({
+//             message: 'Reservations retrieved successfully',
+//             reservations,
+//         });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
 module.exports = {
     createReservation,
     editReservation,
     cancelReservation,
     manageReservation,
-    getAllReservations,
+  //  getAllReservations,
 };
