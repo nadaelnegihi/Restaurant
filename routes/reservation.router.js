@@ -5,11 +5,11 @@ const { auth, Roles } = require('../middleware/authMiddleware');
 
 
 router.patch('/cancel/:reservationId', cancelReservation); 
+router.get('/', getAllReservations); 
 // User Routes
 router.post('/create', auth([Roles.User]), createReservation); 
 router.put('/edit/:reservationId', auth([Roles.User]), editReservation); 
-// Get All Reservations
-router.get('/', auth([Roles.User, Roles.Admin]), getAllReservations); // Accessible only by the authenticated user
+
 
 
 // Admin Routes

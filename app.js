@@ -18,6 +18,7 @@ const port = process.env.PORT;
 
 
 
+
 const cors = require('cors');
 app.use(cors({
     origin: 'http://localhost:3000',  // Allow requests from your frontend
@@ -25,6 +26,7 @@ app.use(cors({
     credentials: true,
   }));
   
+
 
 app.use("/api/v1",authrouter);
 app.use("/api/v1/orders", orderRouter);
