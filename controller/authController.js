@@ -28,7 +28,7 @@ const signUp = async (req,res)=>{
     
         const addedUser =  await newUser.save()
         
-        res.status(200).json({message:"User added",addedUser})
+        res.status(200).json({message:"User added",addedUser,role: addedUser.role})
     }catch(error){
         console.log('Error',error)
         res.status(500).json({ message: "Internal Server Error" });
@@ -49,7 +49,7 @@ const login = async (req, res) => {
                   const token = jwt.sign({id:user._id,isLoggedin:true} ,
                   process.env.tokenSignautre , {expiresIn : '24h'})
                    res.status(200).json({
-                  message:"login is successfull",token
+                  message:"login is successfull",token,role: user.role
                    })
                }else{
                   res.json({

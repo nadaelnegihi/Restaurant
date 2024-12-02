@@ -18,6 +18,14 @@ const port = process.env.PORT;
 
 
 
+const cors = require('cors');
+app.use(cors({
+    origin: 'http://localhost:3000',  // Allow requests from your frontend
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true,
+  }));
+  
+
 app.use("/api/v1",authrouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/reservations",reservationRouter);

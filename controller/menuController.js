@@ -74,9 +74,21 @@ const editMenuItem = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+const getAllMenuItems = async (req, res) => {
+    try {
+        const menuItems = await menuItemModel.find(); // Fetch all items
+        res.status(200).json({
+            message: 'Menu items retrieved successfully',
+            menuItems,
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 module.exports = {
     addMenuItem,
     deleteMenuItem,
     editMenuItem,
+    getAllMenuItems,
 };
