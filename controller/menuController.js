@@ -74,6 +74,8 @@ const editMenuItem = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+// get all (by both)
 const getAllMenuItems = async (req, res) => {
     try {
         const menuItems = await menuItemModel.find(); // Fetch all items
