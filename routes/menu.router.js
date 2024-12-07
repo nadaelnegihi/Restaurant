@@ -11,7 +11,7 @@ router.put("/edit/:itemId", auth([Roles.Admin]), editMenuItem);
 
 // Delete Menu Item (Admin Only)
 router.delete("/delete/:itemId", auth([Roles.Admin]), deleteMenuItem);
-// Get Menu Items
+// Get Menu Items 
 router.get('/', auth([Roles.User, Roles.Admin]), getAllMenuItems);
 
 

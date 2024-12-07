@@ -6,7 +6,7 @@ const tableModel = require('../models/tableModel');
 const createReservation = async (req,res)=>{
     try {
         const { table_number, time } = req.body;
-        const customer_id = req.user.id; 
+        const user_id = req.user.id; 
          
         const table = await tableModel.findOne({ table_number });
         if (!table) {
@@ -17,7 +17,7 @@ const createReservation = async (req,res)=>{
         }
 
         const newReservation = new reservationModel({
-            customer_id,
+            user_id,
             table_number,
             time,
           });
