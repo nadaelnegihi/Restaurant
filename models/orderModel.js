@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['in-progress', 'completed', 'canceled'],
+    enum: ['order placed','in-progress', 'completed', 'canceled'],
     default: 'in-progress',
   },
   created_at: {

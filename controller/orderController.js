@@ -1,99 +1,178 @@
 const orderModel = require("../models/orderModel")
 const menuItemModel = require("../models/menuModel")
 const reservationModel = require("../models/reservationModel");
-
+const mongoose = require('mongoose');
 //place order (user)
-const placeOrder = async (req, res)=> {
-    try {
-      const {reservation_id, items } = req.body;
-      const customer_id = req.user.id;
+const placeOrder = async (req, res) => {
+  try {
+    const { items } = req.body;
+    const user_id = req.user.id;
 
-      const reservation = await reservationModel.findById(reservation_id);
-      if (!reservation) {
-      return res.status(404).json({ error: "Reservation not found" });
-     }
-    //ensures that all the database queries complete before moving to the next step
-    const itemDetails = await Promise.all( // P is uppercase
+    // Find the user's active reservation
+    const reservation = await reservationModel.findOne({ user_id, status: 'active' });
+    if (!reservation) {
+      return res.status(404).json({ error: "No active reservation found" });
+    }
 
-        items.map(async(item)=>{
-          const menuItem = await menuItemModel.findById(item.item_id);
-          if(!menuItem){
-            throw new Error ("Menu item not found");
-          }
-          return{
-            item_id: menuItem._id,
-            name: menuItem.name,
-            quantity: item.quantity,
-            price: menuItem.price,
-            total: menuItem.price * item.quantity,
-          };
-        })
-    );
-    ///The reduce() function calculates the total price for the entire order by summing up the total field of each item.
+    // console.log("Items from user:", items);
+
+    // Get the menu items based on the names provided in the request body
+    const menuItems = await menuItemModel.find({
+      name: { $in: items.map(item => new RegExp(item.name, 'i')) } // to handle upper and lower cases
+    });
+
+    
+   // console.log("Menu Items found in database:", menuItems);
+
+    // Ensure all menu items are found
+    if (menuItems.length !== items.length) {
+      return res.status(400).json({ error: "One or more menu items not found" });
+    }
+
+    // Map through the items and attach menu item details (item_id, price, etc.)
+    const itemDetails = items.map(item => {
+      const menuItem = menuItems.find(menuItem => menuItem.name.toLowerCase() === item.name.toLowerCase());
+      return {
+        item_id: menuItem._id,
+        name: menuItem.name,
+        quantity: item.quantity,
+        price: menuItem.price,
+        total: menuItem.price * item.quantity
+      };
+    });
+
+    // Calculate the total price
     const total_price = itemDetails.reduce((sum, item) => sum + item.total, 0);
 
-      // Create and save the order
-      const newOrder = new orderModel({
-        customer_id,
-        reservation_id, 
-        items: itemDetails,
-        total_price,
-        status: 'in-progress', 
-      });
+    // Create the order object and save it
+    const newOrder = new orderModel({
+      user_id,
+      reservation_id: reservation._id, // Use the found reservation ID
+      items: itemDetails,
+      total_price,
+      status: 'order placed'
+    });
+    console.log('Saving new order:', newOrder);
+    const savedOrder = await newOrder.save();
+    console.log('Order saved successfully:', savedOrder);
+    
+    // Respond with the saved order
+    res.status(201).json({
+      message: 'Order placed successfully',
+      order: savedOrder
+    });
 
-      const savedOrder = await newOrder.save();
-      res.status(201).json({
-        message: 'Order placed successfully',
-        order: savedOrder,
-      });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: error.message });
   }
+};
 
 
 
 //edit order (user)
-const editOrder = async (req,res)=>{
-    try {
-        const { orderId } = req.params;
-        const { items } = req.body; 
-        const order = await orderModel.findById(orderId);
-        if (!order) {
-          return res.status(404).json({ error: "Order not found" });
-        }
-       const itemDetails = await Promise.all(
-           items.map(async (item)=>{
-            const menuItem = await menuItemModel.findById(item.item_id);
-            if(!menuItem){
-                throw new Error ("Menu item not found");
-            }
-            return{
-               item_id: menuItem._id,
-               name: menuItem.name,
-               quantity: item.quantity,
-               price: menuItem.price,
-               total: menuItem.price * item.quantity,
-            };
-           })
-       );
-       // Recalculate the total price for the updated order
-       const total_price = itemDetails.reduce((sum, item) => sum + item.total, 0);
+// const editOrder = async (req,res)=>{
+//     try {
+//         const { orderId } = req.params;
+//         const { items } = req.body; 
+//         const order = await orderModel.findById(orderId);
+//         if (!order) {
+//           return res.status(404).json({ error: "Order not found" });
+//         }
+//         const itemDetails = await Promise.all(
+//           items.map(async (item) => {
+//             const menuItem = await menuItemModel.findOne({
+//               name: new RegExp('^' + item.name + '$', 'i') // Case-insensitive search for a single name
+//             });
+        
+//             if (!menuItem) {
+//               throw new Error("Menu item not found");
+//             }
+        
+//             return {
+//               item_id: menuItem._id,
+//               name: menuItem.name,
+//               quantity: item.quantity,
+//               price: menuItem.price,
+//               total: menuItem.price * item.quantity,
+//             };
+//           })
+//         );
+        
+//        // Recalculate the total price for the updated order
+//        const total_price = itemDetails.reduce((sum, item) => sum + item.total, 0);
 
-       order.items=itemDetails;
-       order.total_price=total_price;
+//        order.items=itemDetails;
+//        order.total_price=total_price;
 
-       const updatedOrder = await order.save();
+//        const updatedOrder = await order.save();
        
-       res.status(200).json({
-        message: "Order updated successfully",
-        order: updatedOrder,
-       });
+//        res.status(200).json({
+//         message: "Order updated successfully",
+//         order: updatedOrder,
+//        });
+//     }
+//     catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
+const editOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { items } = req.body;
+
+    // Find the order by ID
+    const order = await orderModel.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
     }
-    catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+
+    // Process each item in the order
+    const itemDetails = await Promise.all(
+      items.map(async (item) => {
+        console.log("Searching for item:", item.name);
+        const menuItem = await menuItemModel.findOne({
+          name: new RegExp(`^${item.name}$`, "i"), // Case-insensitive match
+        });
+
+        console.log("Menu Item found:", menuItem);
+
+        if (!menuItem) {
+          throw new Error(`Menu item with name "${item.name}" not found`);
+        }
+
+        return {
+          item_id: menuItem._id,
+          name: menuItem.name,
+          quantity: item.quantity,
+          price: menuItem.price,
+          total: menuItem.price * item.quantity,
+        };
+      })
+    );
+
+    // Recalculate the total price for the updated order
+    const total_price = itemDetails.reduce((sum, item) => sum + item.total, 0);
+
+    // Update the order details
+    order.items = itemDetails;
+    order.total_price = total_price;
+
+    // Save the updated order
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      message: "Order updated successfully",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: error.message });
+  }
 };
+
+
+
 
 //cancel order (user)
 // for this case we are not removing the cancelled orders in the db 
