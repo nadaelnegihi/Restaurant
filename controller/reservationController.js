@@ -73,7 +73,7 @@ const editReservation = async (req,res)=>{
 const cancelReservation = async(req,res)=>{
     try{
         const { reservationId } = req.params;
-        const customer_id = req.user.id;
+       // const user_id = req.user.id;
         
         const reservation = await reservationModel.findById(reservationId);
         if (!reservation) {
