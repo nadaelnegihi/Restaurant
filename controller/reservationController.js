@@ -122,25 +122,48 @@ const manageReservation = async (req, res) =>{
         res.status(400).json({ error: error.message });
     }
 }
+// view (user)
+const viewReservations = async (req, res) => {
+    try {
+      const user_id = req.user.id;
+  
+      // Find reservations for the logged-in user
+      const reservations = await reservationModel.find({ user_id });
+  
+      if (!reservations.length) {
+        return res.status(404).json({ message: 'No reservations found for this user' });
+      }
+  
+      res.status(200).json({
+        message: 'Reservations retrieved successfully',
+        reservations,
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 
-// // get all --by both 
-// const getAllReservations = async (req, res) => {
-//     try {
-//         const reservations = await reservationModel.find(); // Filter reservations by the user
 
-//         res.status(200).json({
-//             message: 'Reservations retrieved successfully',
-//             reservations,
-//         });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// };
+
+// get all (admin)
+const getAllReservations = async (req, res) => {
+    try {
+        const reservations = await reservationModel.find(); // Filter reservations by the user
+
+        res.status(200).json({
+            message: 'Reservations retrieved successfully',
+            reservations,
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 module.exports = {
     createReservation,
     editReservation,
     cancelReservation,
     manageReservation,
-  //  getAllReservations,
+    getAllReservations,
+    viewReservations
 };
