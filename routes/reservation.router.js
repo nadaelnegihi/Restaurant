@@ -6,9 +6,9 @@ const { auth, Roles } = require('../middleware/authMiddleware');
 // cancel reservation (both)
 router.patch('/cancel/:reservationId', cancelReservation); 
 
+router.get('/tables', fetchAvailableTables);
+
 // User Routes
-
-
 // create reservation
 router.post('/create', auth([Roles.User]), createReservation); 
 // edit reservation
