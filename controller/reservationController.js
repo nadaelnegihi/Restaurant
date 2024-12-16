@@ -159,11 +159,26 @@ const getAllReservations = async (req, res) => {
     }
 };
 
+const fetchAvailableTables = async (req, res) => {
+    try {
+        // Fetch all tables with isAvailable set to true
+        const availableTables = await tableModel.find({ isAvailable: true });
+
+        res.status(200).json({
+            message: 'Available tables retrieved successfully',
+            tables: availableTables,
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     createReservation,
     editReservation,
     cancelReservation,
     manageReservation,
     getAllReservations,
-    viewReservations
+    viewReservations,
+    fetchAvailableTables
 };

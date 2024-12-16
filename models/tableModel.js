@@ -10,6 +10,10 @@ const tableSchema = new mongoose.Schema({
         type: Boolean,
         default: true, // Indicates whether the table is available or not
     },
+    capacity: {
+         type: Number, 
+         required: true 
+    },
 
 },{ collection: 'table' });
 

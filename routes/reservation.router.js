@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { createReservation, editReservation,cancelReservation, manageReservation,viewReservations ,getAllReservations} = require('../controller/reservationController');
+const { createReservation, editReservation,cancelReservation, manageReservation,viewReservations ,getAllReservations,fetchAvailableTables} = require('../controller/reservationController');
 const { auth, Roles } = require('../middleware/authMiddleware');
 
 // cancel reservation (both)
 router.patch('/cancel/:reservationId', cancelReservation); 
 
+router.get('/tables', fetchAvailableTables);
+
 // User Routes
-
-
 // create reservation
 router.post('/create', auth([Roles.User]), createReservation); 
 // edit reservation
