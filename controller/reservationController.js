@@ -106,7 +106,9 @@ const manageReservation = async (req, res) => {
       const { reservationId } = req.params;
       const { status } = req.body;
 
+
       console.log('Updating reservation:', reservationId, 'to status:', status);
+
 
       // Validate status
       const validStatuses = ['active', 'canceled', 'completed'];
@@ -162,6 +164,8 @@ const viewReservations = async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
+
+
   };
 
 
@@ -179,6 +183,7 @@ const getAllReservations = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 const getAvailableTables = async (req, res) => {
     try {
       // Fetch tables where isAvailable is true
@@ -197,6 +202,7 @@ const getAvailableTables = async (req, res) => {
     getAvailableTables,
   };
 
+
 module.exports = {
     createReservation,
     editReservation,
@@ -204,4 +210,5 @@ module.exports = {
     manageReservation,
     getAllReservations,
     viewReservations,getAvailableTables
+
 };
