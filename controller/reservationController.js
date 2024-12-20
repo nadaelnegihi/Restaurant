@@ -101,28 +101,48 @@ const cancelReservation = async(req,res)=>{
 
 // manage -- admin 
 
-const manageReservation = async (req, res) =>{
-    try{
-        const { reservationId } = req.params;
-        const { status } = req.body; 
+const manageReservation = async (req, res) => {
+  try {
+      const { reservationId } = req.params;
+      const { status } = req.body;
 
-       const reservation = await reservationModel.findById(reservationId);
-       
-       
-       if (!reservation) {
-        return res.status(404).json({ error: 'Reservation not found' });
-       }
-       reservation.status = status || reservation.status;
-       const updatedReservation = await reservation.save();
+      console.log('Updating reservation:', reservationId, 'to status:', status);
 
-       res.status(200).json({
-       message: 'Reservation status updated successfully',
-       reservation: updatedReservation,
-    });
-    }catch(error){
-        res.status(400).json({ error: error.message });
-    }
-}
+      // Validate status
+      const validStatuses = ['active', 'canceled', 'completed'];
+      if (!validStatuses.includes(status)) {
+          return res.status(400).json({ error: 'Invalid status value' });
+      }
+
+      const reservation = await reservationModel.findById(reservationId);
+      if (!reservation) {
+          return res.status(404).json({ error: 'Reservation not found' });
+      }
+
+      reservation.status = status;
+
+      // Update table availability when status is 'completed' or 'canceled'
+      if (['completed', 'canceled'].includes(status)) {
+          const table = await tableModel.findOne({ table_number: reservation.table_number });
+          if (table) {
+              table.isAvailable = true;
+              await table.save();
+          }
+      }
+
+      const updatedReservation = await reservation.save();
+
+      res.status(200).json({
+          message: 'Reservation status updated successfully',
+          reservation: updatedReservation,
+      });
+  } catch (error) {
+      console.error('Error updating reservation:', error.message);
+      res.status(400).json({ error: error.message });
+  }
+};
+
+
 // view (user)
 const viewReservations = async (req, res) => {
     try {
@@ -159,6 +179,23 @@ const getAllReservations = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+const getAvailableTables = async (req, res) => {
+    try {
+      // Fetch tables where isAvailable is true
+      const availableTables = await tableModel.find({ isAvailable: true });
+      res.status(200).json({
+        message: 'Available tables retrieved successfully',
+        tables: availableTables,
+      });
+    } catch (error) {
+      console.error('Error fetching available tables:', error.message);
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
+  module.exports = {
+    getAvailableTables,
+  };
 
 module.exports = {
     createReservation,
@@ -166,5 +203,5 @@ module.exports = {
     cancelReservation,
     manageReservation,
     getAllReservations,
-    viewReservations
+    viewReservations,getAvailableTables
 };
